@@ -349,15 +349,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding: EdgeInsets.all(16.0),
                   child: CircularProgressIndicator(),
                 ),
-              Card(
-                child: ListTile(
-                  title: const Text('Sunday by Sunday login',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  onTap: () async {
-                    await launchUrl(Uri.parse(sundayBySundayUrl));
-                  },
-                ),
-              ),
+              // Card(
+              //   child: ListTile(
+              //     title: const Text('Sunday by Sunday login',
+              //         style: TextStyle(fontWeight: FontWeight.bold)),
+              //     onTap: () async {
+              //       await launchUrl(Uri.parse(sundayBySundayUrl));
+              //     },
+              //   ),
+              // ),
               Card(
                 child: ListTile(
                   title: const Text('View music catalogue',
