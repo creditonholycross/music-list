@@ -7,6 +7,7 @@ import 'package:flutter_cpc_music_list/helper/fetchMusic.dart';
 import 'package:flutter_cpc_music_list/helper/navScroll.dart';
 import 'package:flutter_cpc_music_list/helper/wear_os.dart';
 import 'package:flutter_cpc_music_list/models/catalogue.dart';
+import 'package:flutter_cpc_music_list/models/month.dart';
 import 'package:flutter_cpc_music_list/models/music.dart';
 import 'package:flutter_cpc_music_list/models/service.dart';
 import 'package:flutter_cpc_music_list/screens/catalogueScreen.dart';
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
 class ServiceState extends ChangeNotifier {
   late Service currentService;
   Service? nextService;
-  List<Service>? serviceList;
+  List<MonthlyMusic>? serviceList;
   List<Catalogue>? catalogueList;
   List<Catalogue>? filteredCatalogueList;
   String seasonMenuValue = 'season (all)';
@@ -194,7 +195,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   // late Future<Service?> futureNextService;
   Service? upcomingService;
-  List<Service>? serviceList = <Service>[];
+  List<MonthlyMusic>? serviceList = <MonthlyMusic>[];
   int? catalogueCount = 0;
   static const String sundayBySundayUrl = 'https://sbs.rscm.org.uk/';
 
@@ -458,39 +459,58 @@ class _ServiceListPageState extends State<ServiceListPage> {
                       )),
                 ),
                 ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  physics: const ScrollPhysics(),
-                  itemCount: serviceList!.length,
-                  itemBuilder: (context, index) {
-                    var date = Music.parseDate(serviceList![index].date);
-                    return ListTile(
-                      title: Text(date,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text.rich(TextSpan(children: [
-                        TextSpan(
-                            text: serviceList![index].serviceType,
-                            style: const TextStyle(fontSize: 16)),
-                        TextSpan(
-                            text:
-                                ' \nRehearsal - ${Music.formatTime(serviceList![index].rehearsalTime)}\nService - ${Music.formatTime(serviceList![index].time)}',
-                            style: const TextStyle(
-                                fontStyle: FontStyle.italic, fontSize: 14))
-                      ])),
-                      // subtitle: Text(
-                      //     '${serviceList![index].serviceType} \nRehearsal - ${serviceList![index].rehearsalTime}\nService - ${serviceList![index].time}'),
-                      trailing: const Icon(Icons.info_outline),
-                      isThreeLine: true,
-                      onTap: () {
-                        appState.setCurrentService(serviceList![index]);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (context) => const ServiceMusicPage()),
-                        );
-                      },
-                    );
-                  },
-                ),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    physics: const ScrollPhysics(),
+                    itemCount: serviceList!.length,
+                    itemBuilder: (c, i) {
+                      var month = serviceList![i].monthName;
+                      return Column(children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8, bottom: 2),
+                          child: Text(month,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                              )),
+                        ),
+                        ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: serviceList![i].services.length,
+                            itemBuilder: (context, index) {
+                              var service = serviceList![i].services;
+                              var date = Music.parseDate(service[index].date);
+                              return ListTile(
+                                title: Text(date,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold)),
+                                subtitle: Text.rich(TextSpan(children: [
+                                  TextSpan(
+                                      text: service[index].serviceType,
+                                      style: const TextStyle(fontSize: 16)),
+                                  TextSpan(
+                                      text:
+                                          ' \nRehearsal - ${Music.formatTime(service[index].rehearsalTime)}\nService - ${Music.formatTime(service[index].time)}',
+                                      style: const TextStyle(
+                                          fontStyle: FontStyle.italic,
+                                          fontSize: 14))
+                                ])),
+                                trailing: const Icon(Icons.info_outline),
+                                isThreeLine: true,
+                                onTap: () {
+                                  appState.setCurrentService(service[index]);
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ServiceMusicPage()),
+                                  );
+                                },
+                              );
+                            })
+                      ]);
+                    }),
               ]);
             } else {
               return const Text('No upcoming services');
@@ -546,7 +566,6 @@ class ServiceMusicPage extends StatelessWidget {
                                 currentService.music[index].musicType,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 16),
-                                // textAlign: TextAlign.left,
                               )
                             : null,
                       ),
@@ -604,8 +623,6 @@ class TitleFormatting extends StatelessWidget {
   final Music? music;
 
   final psalmRegex = RegExp(r'v\d{1,2}');
-
-  // final hymnRegex = RegExp(r'#');
 
   @override
   Widget build(BuildContext context) {

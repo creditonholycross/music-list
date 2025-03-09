@@ -1,5 +1,6 @@
 import 'package:csv/csv.dart';
 import 'package:flutter_cpc_music_list/helper/dbFunctions.dart';
+import 'package:flutter_cpc_music_list/models/month.dart';
 import 'package:flutter_cpc_music_list/models/music.dart';
 import 'package:flutter_cpc_music_list/models/service.dart';
 import 'package:http/http.dart' as http;
@@ -87,11 +88,18 @@ List<Service> groupMusic(List<Music> musicList) {
   var serviceList = <Service>[];
 
   newMap.forEach((k, v) => serviceList.add(Service.createService(k, v)));
-  // Service(
-  //     date: k.split(',')[0],
-  //     time: v[0].time,
-  //     rehearsalTime: v[0].rehearsalTime,
-  //     serviceType: k.split(',')[1],
-  //     music: v)));
   return serviceList;
+}
+
+List<MonthlyMusic> groupMusicByMonth(List<Music> musicList) {
+  var serviceList = groupMusic(musicList);
+
+  var monthlyList = <MonthlyMusic>[];
+
+  var serviceMap = groupBy(serviceList, (item) => item.date.substring(4, 6));
+
+  serviceMap
+      .forEach((k, v) => monthlyList.add(MonthlyMusic.createService(k, v)));
+
+  return monthlyList;
 }
