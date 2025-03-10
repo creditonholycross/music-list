@@ -661,7 +661,8 @@ Future<void> printDoc(MonthlyMusic monthlyMusic) async {
                                           monthlyMusic
                                               .services[intList[j][index]]
                                               .music[i]
-                                              .title,
+                                              .title
+                                              .replaceFirst('#', ' '),
                                           style:
                                               const pw.TextStyle(fontSize: 12)),
                                     ),
