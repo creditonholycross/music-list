@@ -7,6 +7,7 @@ import 'package:flutter_cpc_music_list/helper/fetchMusic.dart';
 import 'package:flutter_cpc_music_list/helper/navScroll.dart';
 import 'package:flutter_cpc_music_list/helper/wear_os.dart';
 import 'package:flutter_cpc_music_list/models/catalogue.dart';
+import 'package:flutter_cpc_music_list/models/month.dart';
 import 'package:flutter_cpc_music_list/models/music.dart';
 import 'package:flutter_cpc_music_list/models/service.dart';
 import 'package:flutter_cpc_music_list/screens/catalogueScreen.dart';
@@ -18,6 +19,9 @@ import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 void main() {
   if (kIsWeb) {
@@ -48,7 +52,7 @@ class MyApp extends StatelessWidget {
 class ServiceState extends ChangeNotifier {
   late Service currentService;
   Service? nextService;
-  List<Service>? serviceList;
+  List<MonthlyMusic>? serviceList;
   List<Catalogue>? catalogueList;
   List<Catalogue>? filteredCatalogueList;
   String seasonMenuValue = 'season (all)';
@@ -194,7 +198,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   // late Future<Service?> futureNextService;
   Service? upcomingService;
-  List<Service>? serviceList = <Service>[];
+  List<MonthlyMusic>? serviceList = <MonthlyMusic>[];
   int? catalogueCount = 0;
   static const String sundayBySundayUrl = 'https://sbs.rscm.org.uk/';
 
@@ -458,39 +462,84 @@ class _ServiceListPageState extends State<ServiceListPage> {
                       )),
                 ),
                 ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  physics: const ScrollPhysics(),
-                  itemCount: serviceList!.length,
-                  itemBuilder: (context, index) {
-                    var date = Music.parseDate(serviceList![index].date);
-                    return ListTile(
-                      title: Text(date,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text.rich(TextSpan(children: [
-                        TextSpan(
-                            text: serviceList![index].serviceType,
-                            style: const TextStyle(fontSize: 16)),
-                        TextSpan(
-                            text:
-                                ' \nRehearsal - ${Music.formatTime(serviceList![index].rehearsalTime)}\nService - ${Music.formatTime(serviceList![index].time)}',
-                            style: const TextStyle(
-                                fontStyle: FontStyle.italic, fontSize: 14))
-                      ])),
-                      // subtitle: Text(
-                      //     '${serviceList![index].serviceType} \nRehearsal - ${serviceList![index].rehearsalTime}\nService - ${serviceList![index].time}'),
-                      trailing: const Icon(Icons.info_outline),
-                      isThreeLine: true,
-                      onTap: () {
-                        appState.setCurrentService(serviceList![index]);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (context) => const ServiceMusicPage()),
-                        );
-                      },
-                    );
-                  },
-                ),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    physics: const ScrollPhysics(),
+                    itemCount: serviceList!.length,
+                    itemBuilder: (c, i) {
+                      var month = serviceList![i].monthName;
+                      return Column(children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(month,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 24,
+                                    )),
+                              ),
+                            ),
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => MonthOverviewPage(
+                                          monthlyMusic: serviceList![i])));
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor:
+                                      Theme.of(context).colorScheme.onSurface,
+                                  elevation: 2,
+                                ),
+                                child: const Text('Overview',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 24,
+                                    )),
+                              ),
+                            )
+                          ],
+                        ),
+                        ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: serviceList![i].services.length,
+                            itemBuilder: (context, index) {
+                              var service = serviceList![i].services;
+                              var date = Music.parseDate(service[index].date);
+                              return ListTile(
+                                title: Text(date,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold)),
+                                subtitle: Text.rich(TextSpan(children: [
+                                  TextSpan(
+                                      text: service[index].serviceType,
+                                      style: const TextStyle(fontSize: 16)),
+                                  TextSpan(
+                                      text:
+                                          ' \nRehearsal - ${Music.formatTime(service[index].rehearsalTime)}\nService - ${Music.formatTime(service[index].time)}',
+                                      style: const TextStyle(
+                                          fontStyle: FontStyle.italic,
+                                          fontSize: 14))
+                                ])),
+                                trailing: const Icon(Icons.info_outline),
+                                isThreeLine: true,
+                                onTap: () {
+                                  appState.setCurrentService(service[index]);
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ServiceMusicPage()),
+                                  );
+                                },
+                              );
+                            })
+                      ]);
+                    }),
               ]);
             } else {
               return const Text('No upcoming services');
@@ -516,48 +565,286 @@ class ServiceMusicPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  currentService.serviceType,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-              ),
+              ServiceTitleWidget(currentService: currentService),
               if (currentService.organist! != '')
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Text('Organist: ${currentService.organist!}',
-                      style: const TextStyle(fontSize: 16)),
-                ),
-              ListView.builder(
-                scrollDirection: Axis.vertical,
-                physics: const ScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: currentService.music.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: currentService.music[index].musicType != ''
-                            ? Text(
-                                currentService.music[index].musicType,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16),
-                                // textAlign: TextAlign.left,
-                              )
-                            : null,
-                      ),
-                      MusicElementWidget(music: currentService.music[index])
-                    ],
-                  );
-                },
-              ),
+                ServiceOrganistWidget(currentService: currentService),
+              ServiceOverviewWidget(currentService: currentService),
             ],
           ),
         ));
+  }
+}
+
+Future<void> printDoc(MonthlyMusic monthlyMusic) async {
+  final doc = pw.Document();
+
+  var numOfServices = monthlyMusic.services.length;
+  // [[0, 1], [2, 3], [4]]
+  var intList = [];
+  var interList = [];
+
+  for (var i = 0; i < numOfServices; i++) {
+    interList.add(i);
+    if (interList.length == 2 || i == numOfServices - 1) {
+      intList.add(interList);
+      interList = [];
+    }
+  }
+  for (var j = 0; j < intList.length; j++) {
+    doc.addPage(pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.ListView.builder(
+                  itemCount: intList[j].length,
+                  itemBuilder: (context, index) {
+                    return pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Container(
+                            alignment: pw.Alignment.centerLeft,
+                            padding: const pw.EdgeInsets.only(bottom: 8),
+                            child: pw.Text(
+                              monthlyMusic
+                                  .services[intList[j][index]].serviceType,
+                              style: pw.TextStyle(
+                                  fontWeight: pw.FontWeight.bold, fontSize: 16),
+                            ),
+                          ),
+                          pw.Padding(
+                            padding: const pw.EdgeInsets.only(bottom: 8),
+                            child: pw.Text(
+                                Music.parseDate(monthlyMusic
+                                    .services[intList[j][index]].date),
+                                style: pw.TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: pw.FontWeight.bold)),
+                          ),
+                          if (monthlyMusic
+                                  .services[intList[j][index]].organist! !=
+                              '')
+                            pw.Padding(
+                              padding: const pw.EdgeInsets.only(bottom: 8),
+                              child: pw.Text(
+                                  'Organist: ${monthlyMusic.services[intList[j][index]].organist!}',
+                                  style: const pw.TextStyle(fontSize: 12)),
+                            ),
+                          pw.ListView.builder(
+                            itemCount: monthlyMusic
+                                .services[intList[j][index]].music.length,
+                            itemBuilder: (c, i) {
+                              return pw.Column(
+                                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                                children: [
+                                  if (monthlyMusic.services[intList[j][index]]
+                                          .music[i].musicType !=
+                                      '')
+                                    pw.SizedBox(
+                                      width: double.infinity,
+                                      child: pw.Text(
+                                        monthlyMusic.services[intList[j][index]]
+                                            .music[i].musicType,
+                                        style: pw.TextStyle(
+                                          fontWeight: pw.FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  if (monthlyMusic.services[intList[j][index]]
+                                          .music[i].title !=
+                                      '')
+                                    pw.SizedBox(
+                                      width: double.infinity,
+                                      child: pw.Text(
+                                          monthlyMusic
+                                              .services[intList[j][index]]
+                                              .music[i]
+                                              .title
+                                              .replaceFirst('#', ' '),
+                                          style:
+                                              const pw.TextStyle(fontSize: 12)),
+                                    ),
+                                  if (monthlyMusic.services[intList[j][index]]
+                                          .music[i].composer !=
+                                      '')
+                                    pw.SizedBox(
+                                        width: double.infinity,
+                                        child: pw.Text(
+                                            monthlyMusic
+                                                .services[intList[j][index]]
+                                                .music[i]
+                                                .composer as String,
+                                            style: pw.TextStyle(
+                                                fontStyle: pw.FontStyle.italic,
+                                                fontSize: 12)))
+                                ],
+                              );
+                            },
+                          ),
+                          if (index != monthlyMusic.services.length - 1)
+                            pw.Divider()
+                        ]);
+                  })
+            ],
+          );
+        }));
+  }
+  await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => doc.save());
+}
+
+class MonthOverviewPage extends StatelessWidget {
+  const MonthOverviewPage({super.key, required this.monthlyMusic});
+  final MonthlyMusic monthlyMusic;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            title: Text('${monthlyMusic.monthName} Overview'),
+            actions: <Widget>[
+              OutlinedButton(
+                onPressed: () {
+                  printDoc(monthlyMusic);
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.onSurface,
+                  elevation: 2,
+                ),
+                child: const Text('Print',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                    )),
+              ),
+            ]),
+        body: MonthOverviewWidget(monthlyMusic: monthlyMusic));
+  }
+}
+
+class MonthOverviewWidget extends StatelessWidget {
+  const MonthOverviewWidget({
+    super.key,
+    required this.monthlyMusic,
+  });
+
+  final MonthlyMusic monthlyMusic;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: monthlyMusic.services.length,
+              itemBuilder: (context, index) {
+                return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ServiceTitleWidget(
+                          currentService: monthlyMusic.services[index]),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8, bottom: 8),
+                        child: Text(
+                            Music.parseDate(monthlyMusic.services[index].date),
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                      ),
+                      if (monthlyMusic.services[index].organist! != '')
+                        ServiceOrganistWidget(
+                            currentService: monthlyMusic.services[index]),
+                      ServiceOverviewWidget(
+                          currentService: monthlyMusic.services[index]),
+                      if (index != monthlyMusic.services.length - 1)
+                        const Divider()
+                    ]);
+              })
+        ],
+      ),
+    );
+  }
+}
+
+class ServiceOverviewWidget extends StatelessWidget {
+  const ServiceOverviewWidget({
+    super.key,
+    required this.currentService,
+  });
+
+  final Service currentService;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      physics: const ScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: currentService.music.length,
+      itemBuilder: (context, index) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: currentService.music[index].musicType != ''
+                  ? Text(
+                      currentService.music[index].musicType,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16),
+                    )
+                  : null,
+            ),
+            MusicElementWidget(music: currentService.music[index])
+          ],
+        );
+      },
+    );
+  }
+}
+
+class ServiceOrganistWidget extends StatelessWidget {
+  const ServiceOrganistWidget({
+    super.key,
+    required this.currentService,
+  });
+
+  final Service currentService;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Text('Organist: ${currentService.organist!}',
+          style: const TextStyle(fontSize: 16)),
+    );
+  }
+}
+
+class ServiceTitleWidget extends StatelessWidget {
+  const ServiceTitleWidget({
+    super.key,
+    required this.currentService,
+  });
+
+  final Service currentService;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.all(8),
+      child: Text(
+        currentService.serviceType,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+      ),
+    );
   }
 }
 
@@ -604,8 +891,6 @@ class TitleFormatting extends StatelessWidget {
   final Music? music;
 
   final psalmRegex = RegExp(r'v\d{1,2}');
-
-  // final hymnRegex = RegExp(r'#');
 
   @override
   Widget build(BuildContext context) {
