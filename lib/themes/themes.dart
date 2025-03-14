@@ -26,12 +26,12 @@ class GlobalThemeData {
   );
 
   static ThemeData lightThemeData = ThemeData(
-    colorScheme: lightColorScheme,
-    useMaterial3: true,
-  );
+      colorScheme: lightColorScheme,
+      useMaterial3: true,
+      snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.white));
 
   static ThemeData darkThemeData = ThemeData(
-    colorScheme: darkColorScheme,
-    useMaterial3: true,
-  );
+      colorScheme: darkColorScheme,
+      useMaterial3: true,
+      snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.black));
 }
