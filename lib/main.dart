@@ -706,20 +706,20 @@ class MonthOverviewPage extends StatelessWidget {
             backgroundColor: Theme.of(context).colorScheme.primary,
             title: Text('${monthlyMusic.monthName} Overview'),
             actions: <Widget>[
-              OutlinedButton(
-                onPressed: () {
-                  printDoc(monthlyMusic);
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Theme.of(context).colorScheme.onSurface,
-                  elevation: 2,
-                ),
-                child: const Text('Print',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                    )),
-              ),
+              // OutlinedButton(
+              //   onPressed: () {
+              //     printDoc(monthlyMusic);
+              //   },
+              //   style: ElevatedButton.styleFrom(
+              //     foregroundColor: Theme.of(context).colorScheme.onSurface,
+              //     elevation: 2,
+              //   ),
+              //   child: const Text('Print',
+              //       style: TextStyle(
+              //         fontWeight: FontWeight.bold,
+              //         fontSize: 24,
+              //       )),
+              // ),
             ]),
         body: MonthOverviewWidget(monthlyMusic: monthlyMusic));
   }
