@@ -27,10 +27,7 @@ class Catalogue {
       'title': title,
       'parts': parts,
       'publisher': publisher,
-      'season': season,
-      'subCat': subCat,
-      'source': source,
-      'date': date
+      'season': season
     };
   }
 

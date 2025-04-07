@@ -26,17 +26,19 @@ class CatalogueDatabaseHelper {
 
   void _createTable(Database db, int newVersion) async {
     var query =
-        'CREATE TABLE $catalogueTable (id STRING PRIMARY KEY, composer STRING, title String, parts STRING, publisher STRING, season STRING, subCat STRING, source STRING, date STRING)';
+        // 'CREATE TABLE $catalogueTable (id STRING PRIMARY KEY, composer STRING, title String, parts STRING, publisher STRING, season STRING, subCat STRING, source STRING, date STRING)';
+        'CREATE TABLE $catalogueTable (id STRING PRIMARY KEY, composer STRING, title String, parts STRING, publisher STRING, season STRING)';
+
     print('Executing query $query');
     await db.execute(query);
     print('Table created');
   }
 
   void _upgradeTable(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 2) {
-      db.execute(
-          "ALTER TABLE $catalogueTable ADD COLUMN subCat STRING, source STRING, date STRING;");
-    }
+    // if (oldVersion < 2) {
+    //   db.execute(
+    //       "ALTER TABLE $catalogueTable ADD COLUMN subCat STRING, source STRING, date STRING;");
+    // }
     print('Table upgraded');
   }
 
