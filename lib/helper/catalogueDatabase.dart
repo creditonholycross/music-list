@@ -18,18 +18,28 @@ class CatalogueDatabaseHelper {
     final path = '$databasePath/$catalogueTable';
     print('Opening db $catalogueTable');
 
-    var catalogueDatabase =
-        await openDatabase(path, version: 1, onCreate: _createTable);
+    var catalogueDatabase = await openDatabase(path,
+        version: 2, onCreate: _createTable, onUpgrade: _upgradeTable);
 
     return catalogueDatabase;
   }
 
   void _createTable(Database db, int newVersion) async {
     var query =
+        // 'CREATE TABLE $catalogueTable (id STRING PRIMARY KEY, composer STRING, title String, parts STRING, publisher STRING, season STRING, subCat STRING, source STRING, date STRING)';
         'CREATE TABLE $catalogueTable (id STRING PRIMARY KEY, composer STRING, title String, parts STRING, publisher STRING, season STRING)';
+
     print('Executing query $query');
     await db.execute(query);
     print('Table created');
+  }
+
+  void _upgradeTable(Database db, int oldVersion, int newVersion) async {
+    // if (oldVersion < 2) {
+    //   db.execute(
+    //       "ALTER TABLE $catalogueTable ADD COLUMN subCat STRING, source STRING, date STRING;");
+    // }
+    print('Table upgraded');
   }
 
   Future<int> insertMusic(Catalogue catalogue) async {

@@ -5,6 +5,9 @@ class Catalogue {
   final String parts;
   final String? publisher;
   final String? season;
+  final String? subCat;
+  final String? source;
+  final String? date;
 
   const Catalogue(
       {this.id,
@@ -12,11 +15,14 @@ class Catalogue {
       required this.title,
       required this.parts,
       this.publisher,
-      this.season});
+      this.season,
+      this.subCat,
+      this.source,
+      this.date});
 
   Map<String, Object?> toMap() {
     return {
-      'id': '$composer$title$parts$publisher',
+      'id': '$composer$title$parts$publisher$subCat$source$date',
       'composer': composer,
       'title': title,
       'parts': parts,
@@ -31,7 +37,10 @@ class Catalogue {
         title: dict['TITLE'],
         parts: dict['PARTS'],
         publisher: dict['PUBLISHER']!,
-        season: dict['SEASON']!);
+        season: dict['SEASON']!,
+        subCat: dict['SUB CATEGORY']!,
+        source: dict['SOURCE'],
+        date: dict['DATE']);
   }
 
   factory Catalogue.fromDb(Map<dynamic, dynamic> dict) {
