@@ -11,7 +11,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 var eventsLink =
     'https://docs.google.com/spreadsheets/d/1r71O_Bm_-dkKBTtyAPMYMfhh1lg5-MwypKAnEs2eYkQ/gviz/tq?tqx=out:csv&sheet=Events';
 
-Future<List<MonthlyEvents>> fetchEvents() async {
+Future<Map<String, List<MonthlyEvents>>> fetchEvents() async {
   print('fetching events');
   http.Response response;
 
@@ -23,7 +23,7 @@ Future<List<MonthlyEvents>> fetchEvents() async {
       Fluttertoast.showToast(
           msg: 'Failed to fetch events, check your internet connection');
     }
-    return [];
+    return {};
   }
 
   if (response.statusCode == 200) {
@@ -33,7 +33,7 @@ Future<List<MonthlyEvents>> fetchEvents() async {
     if (!kIsWeb) {
       Fluttertoast.showToast(msg: 'Failed to tech events');
     }
-    return [];
+    return {};
   }
 }
 
@@ -59,16 +59,27 @@ List<Event> parseCsv(String csv) {
   return eventList;
 }
 
-List<MonthlyEvents> groupEventsByMonth(List<Event> eventList) {
+Map<String, List<MonthlyEvents>> groupEventsByMonth(List<Event> eventList) {
   var monthlyList = <MonthlyEvents>[];
 
+  var filteredList = eventList.where((item) {
+    if (item.dateStart == null || item.dateStart == '') {
+      return true;
+    }
+    var startDatetime = DateTime.parse(item.dateStart as String);
+    return startDatetime.compareTo(DateTime.now()) > 0;
+  });
+
   var serviceMap =
-      groupBy(eventList, (item) => item.getdateLength(item.dateStart));
+      groupBy(filteredList, (item) => item.getdateLength(item.dateStart));
 
   serviceMap
       .forEach((k, v) => monthlyList.add(MonthlyEvents.createEvent(k, v)));
 
-  monthlyList.sort((a, b) => a.monthInt.compareTo(b.monthInt));
+  monthlyList.sort(
+      (a, b) => '${a.year}${a.monthInt}'.compareTo('${b.year}${b.monthInt}'));
 
-  return monthlyList;
+  var yearMap = groupBy(monthlyList, (item) => item.year);
+
+  return yearMap;
 }

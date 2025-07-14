@@ -38,17 +38,23 @@ class MonthlyMusic {
 class MonthlyEvents {
   final String monthName;
   final String monthInt;
+  final String year;
   final List<Event> events;
 
   const MonthlyEvents(
-      {required this.monthName, required this.monthInt, required this.events});
+      {required this.monthName,
+      required this.monthInt,
+      required this.year,
+      required this.events});
 
-  factory MonthlyEvents.createEvent(String monthInt, List<Event> events) {
+  factory MonthlyEvents.createEvent(String dateStart, List<Event> events) {
+    var monthInt = dateStart.substring(5, 7);
+    var year = Event.getYear(dateStart);
     var monthName = monthConv[monthInt] ?? 'TBC';
     if (monthName == 'TBC') {
       monthInt = '13';
     }
     return MonthlyEvents(
-        monthName: monthName, monthInt: monthInt, events: events);
+        monthName: monthName, monthInt: monthInt, year: year, events: events);
   }
 }
