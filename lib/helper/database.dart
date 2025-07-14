@@ -68,10 +68,10 @@ class MusicDatabaseHelper {
 
     if (kIsWeb) {
       result = await db.rawQuery(
-          'SELECT *, service_date FROM $musicTable WHERE CAST(service_date as integer) >= $formattedDate ORDER BY service_date');
+          'SELECT *, service_date FROM $musicTable WHERE CAST(service_date as integer) >= $formattedDate');
     } else {
       result = await db.rawQuery(
-          'SELECT *, service_date || substr("000000"||service_time, -6, 6) as service_datetime FROM $musicTable WHERE CAST(service_datetime as integer) >= $formattedDate$formattedTime ORDER BY service_date');
+          'SELECT *, service_date || substr("000000"||service_time, -6, 6) as service_datetime FROM $musicTable WHERE CAST(service_datetime as integer) >= $formattedDate$formattedTime');
     }
 
     return result;

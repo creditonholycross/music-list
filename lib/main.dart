@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_cpc_music_list/helper/dbFunctions.dart';
 import 'package:flutter_cpc_music_list/helper/fetchCatalogue.dart';
+import 'package:flutter_cpc_music_list/helper/fetchEvents.dart';
 import 'package:flutter_cpc_music_list/helper/fetchMusic.dart';
 import 'package:flutter_cpc_music_list/helper/navScroll.dart';
 import 'package:flutter_cpc_music_list/helper/wear_os.dart';
 import 'package:flutter_cpc_music_list/models/catalogue.dart';
+import 'package:flutter_cpc_music_list/models/event.dart';
 import 'package:flutter_cpc_music_list/models/month.dart';
 import 'package:flutter_cpc_music_list/models/music.dart';
 import 'package:flutter_cpc_music_list/models/service.dart';
@@ -55,6 +57,7 @@ class ServiceState extends ChangeNotifier {
   List<MonthlyMusic>? serviceList;
   List<Catalogue>? catalogueList;
   List<Catalogue>? filteredCatalogueList;
+  Map<String, List<MonthlyEvents>>? eventList;
   String seasonMenuValue = 'season (all)';
   String partsMenuValue = 'parts (all)';
   int navIndex = 0;
@@ -84,6 +87,12 @@ class ServiceState extends ChangeNotifier {
   Future<void> setServiceList() async {
     final service = await DbFunctions().getServiceList();
     serviceList = service;
+    notifyListeners();
+  }
+
+  Future<void> setEventList() async {
+    final events = await fetchEvents();
+    eventList = events;
     notifyListeners();
   }
 
@@ -233,6 +242,10 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         }));
 
+    fetchEvents().then((data) => setState(() {
+          context.read<ServiceState>().eventList = data;
+        }));
+
     super.initState();
   }
 
@@ -362,6 +375,18 @@ class _MyHomePageState extends State<MyHomePage> {
               //     },
               //   ),
               // ),
+              Card(
+                child: ListTile(
+                  title: const Text('View upcoming choir events',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  onTap: () async {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const EventsPage()),
+                    );
+                  },
+                ),
+              ),
               Card(
                 child: ListTile(
                   title: const Text('View music catalogue',
@@ -572,6 +597,135 @@ class ServiceMusicPage extends StatelessWidget {
             ],
           ),
         ));
+  }
+}
+
+class EventsPage extends StatelessWidget {
+  const EventsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<ServiceState>();
+    var events = appState.eventList;
+
+    return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            title: const Text('Choir Events')),
+        body: SingleChildScrollView(child: Center(child: () {
+          if (events!.isNotEmpty) {
+            return Column(children: [
+              ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  physics: const ScrollPhysics(),
+                  itemCount: events.length,
+                  itemBuilder: (cxt, idx) {
+                    String year = events.keys.elementAt(idx);
+                    var yearEvents = events[year];
+                    return Column(children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(year,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  )),
+                            ),
+                          ),
+                        ],
+                      ),
+                      ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          physics: const ScrollPhysics(),
+                          itemCount: yearEvents!.length,
+                          itemBuilder: (c, i) {
+                            var month = yearEvents![i].monthName;
+                            return Column(children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 8),
+                                      child: Text(month,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                          )),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              ListView.builder(
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: yearEvents![i].events.length,
+                                  itemBuilder: (context, index) {
+                                    var event = yearEvents![i].events;
+                                    var dateStart = event[index].dateStart;
+                                    var dateEnd = event[index].dateEnd;
+                                    var eventTime = event[index].time;
+                                    var eventRehearsalTime =
+                                        event[index].rehearsalTime;
+
+                                    return ListTile(
+                                      title: Text.rich(TextSpan(children: [
+                                        if (dateStart != '' &&
+                                            dateStart != null)
+                                          TextSpan(
+                                              text: Music.parseDate(dateStart),
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                        if (dateEnd != '' && dateEnd != null)
+                                          TextSpan(
+                                              text:
+                                                  ' - ${Music.parseDate(dateEnd)}',
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                      ])),
+                                      subtitle: Text.rich(
+                                        TextSpan(children: [
+                                          TextSpan(
+                                              text: event[index].name,
+                                              style: const TextStyle(
+                                                  fontSize: 14)),
+                                          if (eventTime != '' &&
+                                              eventTime != null)
+                                            TextSpan(
+                                                text:
+                                                    '\nStart: ${Event.formatTime(eventTime)}',
+                                                style: const TextStyle(
+                                                    fontStyle: FontStyle.italic,
+                                                    fontSize: 14)),
+                                          if (eventRehearsalTime != '' &&
+                                              eventRehearsalTime != null)
+                                            TextSpan(
+                                                text:
+                                                    '\nRehearsal: ${Event.formatTime(eventRehearsalTime)}',
+                                                style: const TextStyle(
+                                                    fontStyle: FontStyle.italic,
+                                                    fontSize: 14))
+                                        ]),
+                                      ),
+                                      isThreeLine: true,
+                                    );
+                                  })
+                            ]);
+                          }),
+                    ]);
+                  })
+            ]);
+          } else {
+            return const Text('No upcoming events');
+          }
+        }())));
   }
 }
 

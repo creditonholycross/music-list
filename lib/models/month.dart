@@ -1,3 +1,4 @@
+import 'package:flutter_cpc_music_list/models/event.dart';
 import 'package:flutter_cpc_music_list/models/service.dart';
 
 var monthConv = {
@@ -12,7 +13,8 @@ var monthConv = {
   '09': 'September',
   '10': 'October',
   '11': 'November',
-  '12': 'December'
+  '12': 'December',
+  '13': 'TBC'
 };
 
 class MonthlyMusic {
@@ -30,5 +32,29 @@ class MonthlyMusic {
         monthName: monthConv[monthInt] ?? 'January',
         monthInt: monthInt,
         services: services);
+  }
+}
+
+class MonthlyEvents {
+  final String monthName;
+  final String monthInt;
+  final String year;
+  final List<Event> events;
+
+  const MonthlyEvents(
+      {required this.monthName,
+      required this.monthInt,
+      required this.year,
+      required this.events});
+
+  factory MonthlyEvents.createEvent(String dateStart, List<Event> events) {
+    var monthInt = dateStart.substring(5, 7);
+    var year = Event.getYear(dateStart);
+    var monthName = monthConv[monthInt] ?? 'TBC';
+    if (monthName == 'TBC') {
+      monthInt = '13';
+    }
+    return MonthlyEvents(
+        monthName: monthName, monthInt: monthInt, year: year, events: events);
   }
 }

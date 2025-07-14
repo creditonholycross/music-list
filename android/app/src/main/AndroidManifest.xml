@@ -19,7 +19,8 @@
 
     <application
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_3_round"
+        android:icon="@mipmap/new_launcher"
+        android:roundIcon="@mipmap/new_launcher_round"
         android:label="Holy Cross Music">
         <receiver
             android:name=".NextServiceWidget"
