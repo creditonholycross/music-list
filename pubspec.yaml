@@ -49,6 +49,7 @@ dependencies:
   sqflite_common_ffi_web: ^0.4.5+4
   fluttertoast: ^8.2.10
   printing: ^5.14.2
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

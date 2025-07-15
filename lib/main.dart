@@ -24,13 +24,34 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class ThemeNotifier with ChangeNotifier {
+  ThemeData _themeData;
+
+  ThemeNotifier(this._themeData);
+
+  getTheme() => _themeData;
+
+  setTheme(ThemeData themeData) async {
+    _themeData = themeData;
+    notifyListeners();
+  }
+}
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
     // Initialize FFI
     databaseFactory = databaseFactoryFfiWeb;
   }
-  runApp(const MyApp());
+  SharedPreferences.getInstance().then((prefs) {
+    var darkModeOn = prefs.getBool('darkMode') ?? true;
+    runApp(ChangeNotifierProvider<ThemeNotifier>(
+      create: (_) => ThemeNotifier(GlobalThemeData.darkThemeData),
+      child: const MyApp(),
+    ));
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -39,11 +60,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return ChangeNotifierProvider(
       create: (context) => ServiceState(),
       child: MaterialApp(
         title: 'Holy Cross Music',
-        theme: GlobalThemeData.lightThemeData,
+        theme: themeNotifier.getTheme(),
         darkTheme: GlobalThemeData.darkThemeData,
         home: const MyHomePage(title: 'Holy Cross Music'),
       ),
@@ -860,20 +882,20 @@ class MonthOverviewPage extends StatelessWidget {
             backgroundColor: Theme.of(context).colorScheme.primary,
             title: Text('${monthlyMusic.monthName} Overview'),
             actions: <Widget>[
-              // OutlinedButton(
-              //   onPressed: () {
-              //     printDoc(monthlyMusic);
-              //   },
-              //   style: ElevatedButton.styleFrom(
-              //     foregroundColor: Theme.of(context).colorScheme.onSurface,
-              //     elevation: 2,
-              //   ),
-              //   child: const Text('Print',
-              //       style: TextStyle(
-              //         fontWeight: FontWeight.bold,
-              //         fontSize: 24,
-              //       )),
-              // ),
+              OutlinedButton(
+                onPressed: () {
+                  printDoc(monthlyMusic);
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.onSurface,
+                  elevation: 2,
+                ),
+                child: const Text('Print',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                    )),
+              ),
             ]),
         body: MonthOverviewWidget(monthlyMusic: monthlyMusic));
   }

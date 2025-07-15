@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cpc_music_list/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GlobalThemeData {
   static const lightColorScheme = ColorScheme(
@@ -34,4 +36,11 @@ class GlobalThemeData {
       colorScheme: darkColorScheme,
       useMaterial3: true,
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.black));
+}
+
+void onThemeChanged(ThemeData value, ThemeNotifier themeNotifier) async {
+  themeNotifier.setTheme(value);
+
+  var prefs = await SharedPreferences.getInstance();
+  prefs.setBool('darkMode', true);
 }
