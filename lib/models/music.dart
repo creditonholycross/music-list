@@ -11,6 +11,7 @@ class Music {
   final String? composer;
   final String? link;
   final String? serviceOrganist;
+  final String? colour;
 
   const Music(
       {required this.date,
@@ -22,7 +23,8 @@ class Music {
       this.composer,
       this.link,
       this.id,
-      this.serviceOrganist});
+      this.serviceOrganist,
+      this.colour});
 
   factory Music.fromCsv(Map<dynamic, dynamic> csv) {
     return switch (csv) {
@@ -35,7 +37,8 @@ class Music {
         'title': String title,
         'composer': String? composer,
         'link': String? link,
-        'organist': String? serviceOrganist
+        'organist': String? serviceOrganist,
+        'colour': String? colour
       } =>
         Music(
             date: date.replaceAll('-', ''),
@@ -46,7 +49,8 @@ class Music {
             title: title,
             composer: composer,
             link: link,
-            serviceOrganist: serviceOrganist),
+            serviceOrganist: serviceOrganist,
+            colour: colour),
       _ => throw const FormatException('Failed to load music from csv.'),
     };
   }
@@ -63,7 +67,8 @@ class Music {
         'title': String title,
         'composer': String? composer,
         'link': String? link,
-        'serviceOrganist': String? serviceOrganist
+        'serviceOrganist': String? serviceOrganist,
+        'colour': String? colour
       } =>
         Music(
             date: date.toString(),
@@ -74,7 +79,8 @@ class Music {
             title: title,
             composer: composer,
             link: link,
-            serviceOrganist: serviceOrganist),
+            serviceOrganist: serviceOrganist,
+            colour: colour),
       {
         'id': String id,
         'service_date': int date,
@@ -85,7 +91,8 @@ class Music {
         'title': int title,
         'composer': String? composer,
         'link': String? link,
-        'serviceOrganist': String? serviceOrganist
+        'serviceOrganist': String? serviceOrganist,
+        'colour': String? colour
       } =>
         Music(
             date: date.toString(),
@@ -96,7 +103,8 @@ class Music {
             title: title.toString(),
             composer: composer,
             link: link,
-            serviceOrganist: serviceOrganist),
+            serviceOrganist: serviceOrganist,
+            colour: colour),
       {
         'id': String id,
         'service_date': int date,
@@ -107,7 +115,8 @@ class Music {
         'title': String title,
         'composer': String? composer,
         'link': String? link,
-        'serviceOrganist': String? serviceOrganist
+        'serviceOrganist': String? serviceOrganist,
+        'colour': String? colour
       } =>
         Music(
             date: date.toString(),
@@ -118,7 +127,8 @@ class Music {
             title: title.toString(),
             composer: composer,
             link: link,
-            serviceOrganist: serviceOrganist),
+            serviceOrganist: serviceOrganist,
+            colour: colour),
       {
         'id': String id,
         'service_date': int date,
@@ -129,7 +139,8 @@ class Music {
         'title': int title,
         'composer': String? composer,
         'link': String? link,
-        'serviceOrganist': String? serviceOrganist
+        'serviceOrganist': String? serviceOrganist,
+        'colour': String? colour
       } =>
         Music(
             date: date.toString(),
@@ -140,7 +151,8 @@ class Music {
             title: title.toString(),
             composer: composer,
             link: link,
-            serviceOrganist: serviceOrganist),
+            serviceOrganist: serviceOrganist,
+            colour: colour),
       _ => throw const FormatException('Failed to load music from db.'),
     };
   }
@@ -156,7 +168,8 @@ class Music {
       'title': title,
       'composer': composer,
       'link': link,
-      'serviceOrganist': serviceOrganist
+      'serviceOrganist': serviceOrganist,
+      'colour': colour
     };
   }
 
