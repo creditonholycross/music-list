@@ -221,7 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 DbFunctions().getNextService().then((data) => setState(() {
                       context.read<ServiceState>().nextService = data;
                       context.read<ServiceState>().initMusicSpinner = false;
-                      wearOsSync(data);
+                      // wearOsSync(data);
                     }));
               }))
         });
@@ -287,7 +287,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                             .read<ServiceState>()
                                                             .initMusicSpinner =
                                                         false;
-                                                    wearOsSync(data);
+                                                    // wearOsSync(data);
                                                   }));
                                         }))
                               });
@@ -860,20 +860,20 @@ class MonthOverviewPage extends StatelessWidget {
             backgroundColor: Theme.of(context).colorScheme.primary,
             title: Text('${monthlyMusic.monthName} Overview'),
             actions: <Widget>[
-              // OutlinedButton(
-              //   onPressed: () {
-              //     printDoc(monthlyMusic);
-              //   },
-              //   style: ElevatedButton.styleFrom(
-              //     foregroundColor: Theme.of(context).colorScheme.onSurface,
-              //     elevation: 2,
-              //   ),
-              //   child: const Text('Print',
-              //       style: TextStyle(
-              //         fontWeight: FontWeight.bold,
-              //         fontSize: 24,
-              //       )),
-              // ),
+              OutlinedButton(
+                onPressed: () {
+                  printDoc(monthlyMusic);
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.onSurface,
+                  elevation: 2,
+                ),
+                child: const Text('Print',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                    )),
+              ),
             ]),
         body: MonthOverviewWidget(monthlyMusic: monthlyMusic));
   }
