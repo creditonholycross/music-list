@@ -68,7 +68,8 @@ class _CataloguePageState extends State<CataloguePage> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.primary,
-          title: const Text("Catalogue"),
+          title: Text("Catalogue",
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
           actions: <Widget>[
             IconButton(
                 icon: const Icon(Icons.search),

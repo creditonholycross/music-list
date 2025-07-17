@@ -1,4 +1,6 @@
 import 'package:flutter_cpc_music_list/models/music.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_cpc_music_list/themes/themes.dart';
 
 class Service {
   final String date;
@@ -47,5 +49,29 @@ class Service {
         music: music,
         organist: organists.join(', '),
         colour: colour);
+  }
+
+  static Color serviceColor(String theme, Brightness brightness) {
+    if (brightness == Brightness.light) {
+      return GlobalThemeData.themeLightMap[theme]!.colorScheme.primary;
+    } else {
+      return GlobalThemeData.themeDarkMap[theme]!.colorScheme.primary;
+    }
+  }
+
+  Color servicePrimaryColour(Brightness brightness) {
+    if (brightness == Brightness.light) {
+      return GlobalThemeData.themeLightMap[colour]!.colorScheme.primary;
+    } else {
+      return GlobalThemeData.themeDarkMap[colour]!.colorScheme.primary;
+    }
+  }
+
+  Color serviceOnPrimaryColour(Brightness brightness) {
+    if (brightness == Brightness.light) {
+      return GlobalThemeData.themeLightMap[colour]!.colorScheme.onPrimary;
+    } else {
+      return GlobalThemeData.themeDarkMap[colour]!.colorScheme.onPrimary;
+    }
   }
 }

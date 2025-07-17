@@ -4,8 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class GlobalThemeData {
   static const lightRedColorScheme = ColorScheme(
-    primary: Color.fromARGB(255, 255, 0, 68),
-    onPrimary: Colors.black,
+    primary: Color.fromARGB(255, 128, 1, 34),
+    onPrimary: Color.fromARGB(255, 255, 255, 255),
     secondary: Color(0xFFEFF3F3),
     onSecondary: Color.fromARGB(255, 0, 0, 0),
     error: Colors.redAccent,
@@ -17,19 +17,19 @@ class GlobalThemeData {
 
   static const darkRedColorScheme = ColorScheme(
     primary: Color.fromARGB(255, 128, 1, 34),
-    onPrimary: Colors.black,
+    onPrimary: Color.fromARGB(255, 255, 255, 255),
     secondary: Color(0xFFEFF3F3),
     onSecondary: Color.fromARGB(255, 0, 0, 0),
     error: Colors.redAccent,
     onError: Colors.white,
     surface: Color.fromARGB(255, 26, 26, 26),
     onSurface: Color.fromARGB(255, 255, 255, 255),
-    brightness: Brightness.light,
+    brightness: Brightness.dark,
   );
 
   static const lightGreenColorScheme = ColorScheme(
-    primary: Color.fromARGB(255, 0, 255, 0),
-    onPrimary: Colors.black,
+    primary: Color.fromARGB(255, 1, 128, 1),
+    onPrimary: Color.fromARGB(255, 255, 255, 255),
     secondary: Color(0xFFEFF3F3),
     onSecondary: Color.fromARGB(255, 0, 0, 0),
     error: Colors.redAccent,
@@ -41,42 +41,42 @@ class GlobalThemeData {
 
   static const darkGreenColorScheme = ColorScheme(
     primary: Color.fromARGB(255, 1, 128, 1),
-    onPrimary: Colors.black,
+    onPrimary: Color.fromARGB(255, 255, 255, 255),
     secondary: Color(0xFFEFF3F3),
     onSecondary: Color.fromARGB(255, 0, 0, 0),
     error: Colors.redAccent,
     onError: Colors.white,
     surface: Color.fromARGB(255, 26, 26, 26),
     onSurface: Color.fromARGB(255, 255, 255, 255),
-    brightness: Brightness.light,
+    brightness: Brightness.dark,
   );
 
   static const lightBlackColorScheme = ColorScheme(
     primary: Color.fromARGB(255, 0, 0, 0),
-    onPrimary: Colors.black,
+    onPrimary: Color.fromARGB(255, 255, 255, 255),
     secondary: Color(0xFFEFF3F3),
     onSecondary: Color.fromARGB(255, 0, 0, 0),
     error: Colors.redAccent,
     onError: Colors.white,
-    surface: Color(0xFFFAFBFB),
-    onSurface: Color(0xFF241E30),
+    surface: Color.fromARGB(255, 255, 255, 255),
+    onSurface: Color.fromARGB(255, 0, 0, 0),
     brightness: Brightness.light,
   );
 
   static const darkBlackColorScheme = ColorScheme(
     primary: Color.fromARGB(255, 0, 0, 0),
-    onPrimary: Colors.black,
+    onPrimary: Color.fromARGB(255, 255, 255, 255),
     secondary: Color(0xFFEFF3F3),
     onSecondary: Color.fromARGB(255, 0, 0, 0),
     error: Colors.redAccent,
     onError: Colors.white,
     surface: Color.fromARGB(255, 26, 26, 26),
     onSurface: Color.fromARGB(255, 255, 255, 255),
-    brightness: Brightness.light,
+    brightness: Brightness.dark,
   );
 
   static const lightGoldColorScheme = ColorScheme(
-    primary: Color.fromARGB(255, 255, 207, 49),
+    primary: Color.fromARGB(255, 228, 175, 29),
     onPrimary: Colors.black,
     secondary: Color(0xFFEFF3F3),
     onSecondary: Color.fromARGB(255, 0, 0, 0),
@@ -88,7 +88,7 @@ class GlobalThemeData {
   );
 
   static const darkGoldColorScheme = ColorScheme(
-    primary: Color.fromARGB(255, 211, 171, 40),
+    primary: Color.fromARGB(255, 228, 175, 2),
     onPrimary: Colors.black,
     secondary: Color(0xFFEFF3F3),
     onSecondary: Color.fromARGB(255, 0, 0, 0),
@@ -96,12 +96,12 @@ class GlobalThemeData {
     onError: Colors.white,
     surface: Color.fromARGB(255, 26, 26, 26),
     onSurface: Color.fromARGB(255, 255, 255, 255),
-    brightness: Brightness.light,
+    brightness: Brightness.dark,
   );
 
   static const lightPurpleColorScheme = ColorScheme(
-    primary: Color.fromARGB(255, 183, 0, 255),
-    onPrimary: Colors.black,
+    primary: Color.fromARGB(255, 77, 1, 128),
+    onPrimary: Color.fromARGB(255, 255, 255, 255),
     secondary: Color(0xFFEFF3F3),
     onSecondary: Color.fromARGB(255, 0, 0, 0),
     error: Colors.redAccent,
@@ -113,18 +113,18 @@ class GlobalThemeData {
 
   static const darkPurpleColorScheme = ColorScheme(
     primary: Color.fromARGB(255, 77, 1, 128),
-    onPrimary: Colors.black,
+    onPrimary: Color.fromARGB(255, 255, 255, 255),
     secondary: Color(0xFFEFF3F3),
     onSecondary: Color.fromARGB(255, 0, 0, 0),
     error: Colors.redAccent,
     onError: Colors.white,
     surface: Color.fromARGB(255, 26, 26, 26),
     onSurface: Color.fromARGB(255, 255, 255, 255),
-    brightness: Brightness.light,
+    brightness: Brightness.dark,
   );
 
   static const lightRoseColorScheme = ColorScheme(
-    primary: Color.fromARGB(255, 236, 151, 208),
+    primary: Color.fromARGB(255, 187, 118, 181),
     onPrimary: Colors.black,
     secondary: Color(0xFFEFF3F3),
     onSecondary: Color.fromARGB(255, 0, 0, 0),
@@ -144,7 +144,31 @@ class GlobalThemeData {
     onError: Colors.white,
     surface: Color.fromARGB(255, 26, 26, 26),
     onSurface: Color.fromARGB(255, 255, 255, 255),
+    brightness: Brightness.dark,
+  );
+
+  static const lightWhiteColorScheme = ColorScheme(
+    primary: Color.fromARGB(255, 255, 255, 255),
+    onPrimary: Colors.black,
+    secondary: Color(0xFFEFF3F3),
+    onSecondary: Color.fromARGB(255, 0, 0, 0),
+    error: Colors.redAccent,
+    onError: Colors.white,
+    surface: Color(0xFFFAFBFB),
+    onSurface: Color(0xFF241E30),
     brightness: Brightness.light,
+  );
+
+  static const darkWhiteColorScheme = ColorScheme(
+    primary: Color.fromARGB(255, 255, 255, 255),
+    onPrimary: Color.fromARGB(255, 0, 0, 0),
+    secondary: Color(0xFFEFF3F3),
+    onSecondary: Color.fromARGB(255, 0, 0, 0),
+    error: Colors.redAccent,
+    onError: Colors.white,
+    surface: Color.fromARGB(255, 26, 26, 26),
+    onSurface: Color.fromARGB(255, 255, 255, 255),
+    brightness: Brightness.dark,
   );
 
   static ThemeData lightThemeData = ThemeData(
@@ -170,7 +194,7 @@ class GlobalThemeData {
   static ThemeData lightBlackThemeData = ThemeData(
       colorScheme: lightBlackColorScheme,
       useMaterial3: true,
-      snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.white));
+      snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.black));
 
   static ThemeData darkBlackThemeData = ThemeData(
       colorScheme: darkBlackColorScheme,
@@ -207,6 +231,17 @@ class GlobalThemeData {
       useMaterial3: true,
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.black));
 
+  static ThemeData lightWhiteThemeData = ThemeData(
+      colorScheme: lightWhiteColorScheme,
+      useMaterial3: true,
+      snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.white));
+
+  static ThemeData darkWhiteThemeData = ThemeData(
+      colorScheme: darkWhiteColorScheme,
+      useMaterial3: true,
+      snackBarTheme: const SnackBarThemeData(
+          actionTextColor: Color.fromARGB(255, 0, 0, 0)));
+
   static Map<String, ThemeData> themeLightMap = {
     'base': lightThemeData,
     'red': lightThemeData,
@@ -215,6 +250,7 @@ class GlobalThemeData {
     'gold': lightGoldThemeData,
     'purple': lightPurpleThemeData,
     'rose': lightRoseThemeData,
+    'white': lightWhiteThemeData
   };
 
   static Map<String, ThemeData> themeDarkMap = {
@@ -225,12 +261,20 @@ class GlobalThemeData {
     'gold': darkGoldThemeData,
     'purple': darkPurpleThemeData,
     'rose': darkRoseThemeData,
+    'white': darkWhiteThemeData
   };
 }
 
 void onThemeChanged(String theme, ThemeNotifier themeNotifier) async {
-  themeNotifier.setTheme(GlobalThemeData.themeLightMap[theme] as ThemeData,
+  themeNotifier.setTheme(
+      theme,
+      GlobalThemeData.themeLightMap[theme] as ThemeData,
       GlobalThemeData.themeDarkMap[theme] as ThemeData);
   var prefs = await SharedPreferences.getInstance();
   prefs.setString('themeName', theme);
+}
+
+void getThemeName() async {
+  var prefs = await SharedPreferences.getInstance();
+  prefs.getString('themeName') ?? 'base';
 }
