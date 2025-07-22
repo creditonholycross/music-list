@@ -45,7 +45,7 @@ class Service {
         date: idSplit[0],
         time: music[0].time,
         rehearsalTime: music[0].rehearsalTime,
-        serviceType: idSplit[1],
+        serviceType: music[0].serviceType,
         music: music,
         organist: organists.join(', '),
         colour: colour);
