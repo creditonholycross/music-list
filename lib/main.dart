@@ -386,17 +386,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     if (appState.nextService != null)
                       ListTile(
                           title: const Text('Next service:',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18)),
                           subtitle: Text.rich(TextSpan(children: [
                             TextSpan(
                                 text:
                                     '${Music.parseDate(appState.nextService!.date)} - ${appState.nextService!.serviceType}',
-                                style: const TextStyle(fontSize: 16)),
+                                style: const TextStyle(fontSize: 18)),
                             TextSpan(
                                 text:
                                     ' \nRehearsal - ${Music.formatTime(appState.nextService!.rehearsalTime)}\nService - ${Music.formatTime(appState.nextService!.time)}',
                                 style: const TextStyle(
-                                    fontStyle: FontStyle.italic, fontSize: 14))
+                                    fontStyle: FontStyle.italic, fontSize: 16))
                           ]))
                           //  Text(
                           //     '${Music.parseDate(appState.nextService!.date)} - ${appState.nextService!.serviceType}'),
@@ -405,7 +406,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       Card(
                         child: ListTile(
                           title: const Text('View next service',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18)),
                           onTap: () {
                             appState.setCurrentService(appState.nextService!);
                             Navigator.of(context).push(
@@ -420,7 +422,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       Card(
                         child: ListTile(
                           title: const Text('View upcoming services',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18)),
                           onTap: () async {
                             appState.setServiceList();
 
@@ -451,7 +454,8 @@ class _MyHomePageState extends State<MyHomePage> {
               Card(
                 child: ListTile(
                   title: const Text('View upcoming choir events',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                   onTap: () async {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -463,7 +467,8 @@ class _MyHomePageState extends State<MyHomePage> {
               Card(
                 child: ListTile(
                   title: const Text('View music catalogue',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                   onTap: () async {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -503,59 +508,59 @@ class _ServiceListPageState extends State<ServiceListPage> {
     var serviceList = appState.serviceList;
 
     return Scaffold(
-        appBar:
-            AppBar(backgroundColor: appState.serviceColour, actions: <Widget>[
-          IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: appState.refreshDisabled
-                  ? null
-                  : () async {
-                      appState.disableRefresh();
-                      print('Music lists updating');
-                      if (!kIsWeb) {
-                        Fluttertoast.showToast(msg: 'Music lists updating');
-                      }
-                      () {
-                        setState(() {
-                          updateMusicDb().then((data) => {
-                                DbFunctions()
-                                    .getServiceList()
-                                    .then((data) => setState(() {
-                                          context
-                                              .read<ServiceState>()
-                                              .serviceList = data;
-                                          serviceList = data;
-                                          DbFunctions()
-                                              .getNextService()
-                                              .then((data) => setState(() {
-                                                    context
-                                                        .read<ServiceState>()
-                                                        .nextService = data;
-                                                    context
-                                                            .read<ServiceState>()
-                                                            .initMusicSpinner =
-                                                        false;
-                                                    wearOsSync(data);
-                                                  }));
-                                        }))
-                              });
-                        });
-                      };
-                      Timer(const Duration(seconds: 4), appState.enableRefresh);
-                    })
-        ]),
+        appBar: AppBar(
+            backgroundColor: appState.serviceColour,
+            iconTheme:
+                IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+            title: Text('Upcoming Services',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+            actions: <Widget>[
+              IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: appState.refreshDisabled
+                      ? null
+                      : () async {
+                          appState.disableRefresh();
+                          print('Music lists updating');
+                          if (!kIsWeb) {
+                            Fluttertoast.showToast(msg: 'Music lists updating');
+                          }
+                          () {
+                            setState(() {
+                              updateMusicDb().then((data) => {
+                                    DbFunctions()
+                                        .getServiceList()
+                                        .then((data) => setState(() {
+                                              context
+                                                  .read<ServiceState>()
+                                                  .serviceList = data;
+                                              serviceList = data;
+                                              DbFunctions()
+                                                  .getNextService()
+                                                  .then((data) => setState(() {
+                                                        context
+                                                            .read<
+                                                                ServiceState>()
+                                                            .nextService = data;
+                                                        context
+                                                            .read<
+                                                                ServiceState>()
+                                                            .initMusicSpinner = false;
+                                                        wearOsSync(data);
+                                                      }));
+                                            }))
+                                  });
+                            });
+                          };
+                          Timer(const Duration(seconds: 4),
+                              appState.enableRefresh);
+                        })
+            ]),
         body: SingleChildScrollView(
           child: Center(child: () {
             if (serviceList != null) {
               return Column(children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 8, bottom: 8),
-                  child: Text('Upcoming services',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
-                      )),
-                ),
                 ListView.builder(
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
@@ -609,17 +614,18 @@ class _ServiceListPageState extends State<ServiceListPage> {
                               return ListTile(
                                 title: Text(date,
                                     style: const TextStyle(
-                                        fontWeight: FontWeight.bold)),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18)),
                                 subtitle: Text.rich(TextSpan(children: [
                                   TextSpan(
                                       text: service[index].serviceType,
-                                      style: const TextStyle(fontSize: 16)),
+                                      style: const TextStyle(fontSize: 18)),
                                   TextSpan(
                                       text:
                                           ' \nRehearsal - ${Music.formatTime(service[index].rehearsalTime)}\nService - ${Music.formatTime(service[index].time)}',
                                       style: const TextStyle(
                                           fontStyle: FontStyle.italic,
-                                          fontSize: 14))
+                                          fontSize: 16))
                                 ])),
                                 trailing: const Icon(Icons.info_outline),
                                 isThreeLine: true,
@@ -656,6 +662,9 @@ class ServiceMusicPage extends StatelessWidget {
         appBar: AppBar(
             backgroundColor: currentService
                 .servicePrimaryColour(Theme.of(context).colorScheme.brightness),
+            iconTheme: IconThemeData(
+                color: currentService.serviceOnPrimaryColour(
+                    Theme.of(context).colorScheme.brightness)),
             title: Text(Music.parseDate(currentService.date),
                 style: TextStyle(
                     color: currentService.serviceOnPrimaryColour(
@@ -685,6 +694,8 @@ class EventsPage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.primary,
+            iconTheme:
+                IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
             title: Text('Choir Events',
                 style:
                     TextStyle(color: Theme.of(context).colorScheme.onPrimary))),
@@ -758,20 +769,22 @@ class EventsPage extends StatelessWidget {
                                           TextSpan(
                                               text: Music.parseDate(dateStart),
                                               style: const TextStyle(
-                                                  fontWeight: FontWeight.bold)),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18)),
                                         if (dateEnd != '' && dateEnd != null)
                                           TextSpan(
                                               text:
                                                   ' - ${Music.parseDate(dateEnd)}',
                                               style: const TextStyle(
-                                                  fontWeight: FontWeight.bold)),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18)),
                                       ])),
                                       subtitle: Text.rich(
                                         TextSpan(children: [
                                           TextSpan(
                                               text: event[index].name,
                                               style: const TextStyle(
-                                                  fontSize: 14)),
+                                                  fontSize: 16)),
                                           if (eventTime != '' &&
                                               eventTime != null)
                                             TextSpan(
@@ -779,7 +792,7 @@ class EventsPage extends StatelessWidget {
                                                     '\nStart: ${Event.formatTime(eventTime)}',
                                                 style: const TextStyle(
                                                     fontStyle: FontStyle.italic,
-                                                    fontSize: 14)),
+                                                    fontSize: 16)),
                                           if (eventRehearsalTime != '' &&
                                               eventRehearsalTime != null)
                                             TextSpan(
@@ -787,7 +800,7 @@ class EventsPage extends StatelessWidget {
                                                     '\nRehearsal: ${Event.formatTime(eventRehearsalTime)}',
                                                 style: const TextStyle(
                                                     fontStyle: FontStyle.italic,
-                                                    fontSize: 14))
+                                                    fontSize: 16))
                                         ]),
                                       ),
                                       isThreeLine: true,
@@ -934,7 +947,11 @@ class MonthOverviewPage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.primary,
-            title: Text('${monthlyMusic.monthName} Overview'),
+            title: Text('${monthlyMusic.monthName} Overview',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+            iconTheme:
+                IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
             actions: <Widget>[
               OutlinedButton(
                 onPressed: () {
@@ -1052,7 +1069,7 @@ class ServiceOrganistWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Text('Organist: ${currentService.organist!}',
-          style: const TextStyle(fontSize: 16)),
+          style: const TextStyle(fontSize: 18)),
     );
   }
 }
@@ -1092,17 +1109,20 @@ class MusicElementWidget extends StatelessWidget {
       return ListTile(
         visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
         title: Text(music!.composer as String,
-            style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 14)),
+            style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 16)),
         trailing: music!.link != '' ? PlayLinkWidget(music: music) : null,
       );
     }
     if (music!.composer != '') {
       return ListTile(
         visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
-        title: Text(music!.title),
+        title: Text(
+          music!.title,
+          style: const TextStyle(fontSize: 18),
+        ),
         subtitle: Text(
           music!.composer as String,
-          style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 14),
+          style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 16),
         ),
         trailing: music!.link != '' ? PlayLinkWidget(music: music) : null,
       );
@@ -1142,12 +1162,12 @@ class TitleFormatting extends StatelessWidget {
     return Padding(
         padding: const EdgeInsets.only(left: 16, top: 4, bottom: 4),
         child: Text.rich(TextSpan(children: [
-          TextSpan(text: musicTitle, style: const TextStyle(fontSize: 16)),
+          TextSpan(text: musicTitle, style: const TextStyle(fontSize: 18)),
           if (titleItalics != '')
             TextSpan(
                 text: titleItalics,
                 style:
-                    const TextStyle(fontStyle: FontStyle.italic, fontSize: 14))
+                    const TextStyle(fontStyle: FontStyle.italic, fontSize: 16))
         ])));
   }
 }

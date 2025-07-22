@@ -174,73 +174,89 @@ class GlobalThemeData {
   static ThemeData lightThemeData = ThemeData(
       colorScheme: lightRedColorScheme,
       useMaterial3: true,
+      fontFamily: 'CallunaSans',
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.white));
 
   static ThemeData darkThemeData = ThemeData(
       colorScheme: darkRedColorScheme,
       useMaterial3: true,
+      fontFamily: 'CallunaSans',
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.black));
 
   static ThemeData lightGreenThemeData = ThemeData(
       colorScheme: lightGreenColorScheme,
       useMaterial3: true,
+      fontFamily: 'CallunaSans',
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.white));
 
   static ThemeData darkGreenThemeData = ThemeData(
       colorScheme: darkGreenColorScheme,
       useMaterial3: true,
+      fontFamily: 'CallunaSans',
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.black));
 
   static ThemeData lightBlackThemeData = ThemeData(
       colorScheme: lightBlackColorScheme,
       useMaterial3: true,
-      snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.black));
+      fontFamily: 'CallunaSans',
+      snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.white));
 
   static ThemeData darkBlackThemeData = ThemeData(
       colorScheme: darkBlackColorScheme,
       useMaterial3: true,
+      fontFamily: 'CallunaSans',
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.black));
 
   static ThemeData lightGoldThemeData = ThemeData(
       colorScheme: lightGoldColorScheme,
       useMaterial3: true,
+      fontFamily: 'CallunaSans',
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.white));
 
   static ThemeData darkGoldThemeData = ThemeData(
       colorScheme: darkGoldColorScheme,
       useMaterial3: true,
+      fontFamily: 'CallunaSans',
+      iconTheme: const IconThemeData(color: Colors.black),
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.black));
 
   static ThemeData lightPurpleThemeData = ThemeData(
       colorScheme: lightPurpleColorScheme,
       useMaterial3: true,
+      fontFamily: 'CallunaSans',
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.white));
 
   static ThemeData darkPurpleThemeData = ThemeData(
       colorScheme: darkPurpleColorScheme,
       useMaterial3: true,
+      fontFamily: 'CallunaSans',
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.black));
 
   static ThemeData lightRoseThemeData = ThemeData(
       colorScheme: lightRoseColorScheme,
       useMaterial3: true,
+      fontFamily: 'CallunaSans',
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.white));
 
   static ThemeData darkRoseThemeData = ThemeData(
       colorScheme: darkRoseColorScheme,
       useMaterial3: true,
+      fontFamily: 'CallunaSans',
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.black));
 
   static ThemeData lightWhiteThemeData = ThemeData(
       colorScheme: lightWhiteColorScheme,
       useMaterial3: true,
+      fontFamily: 'CallunaSans',
       snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.white));
 
   static ThemeData darkWhiteThemeData = ThemeData(
       colorScheme: darkWhiteColorScheme,
       useMaterial3: true,
-      snackBarTheme: const SnackBarThemeData(
-          actionTextColor: Color.fromARGB(255, 0, 0, 0)));
+      fontFamily: 'CallunaSans',
+      iconTheme: const IconThemeData(color: Colors.black),
+      // appBarTheme: AppBarTheme(titleTextStyle: TextStyle(color: Colors.black)),
+      snackBarTheme: const SnackBarThemeData(actionTextColor: Colors.black));
 
   static Map<String, ThemeData> themeLightMap = {
     'base': lightThemeData,
