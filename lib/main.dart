@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_cpc_music_list/helper/dbFunctions.dart';
 import 'package:flutter_cpc_music_list/helper/fetchCatalogue.dart';
 import 'package:flutter_cpc_music_list/helper/fetchEvents.dart';
@@ -24,13 +25,46 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class ThemeNotifier with ChangeNotifier {
+  ThemeData _lightThemeData;
+  ThemeData _darkThemeData;
+  String _themeName;
+
+  ThemeNotifier(this._themeName, this._lightThemeData, this._darkThemeData);
+
+  getLightTheme() => _lightThemeData;
+  getDarkTheme() => _darkThemeData;
+  getThemeName() => _themeName;
+
+  setTheme(String themeName, ThemeData lightThemeData,
+      ThemeData darkThemeData) async {
+    _themeName = themeName;
+    _lightThemeData = lightThemeData;
+    _darkThemeData = darkThemeData;
+    notifyListeners();
+  }
+}
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
     // Initialize FFI
     databaseFactory = databaseFactoryFfiWeb;
   }
-  runApp(const MyApp());
+  SharedPreferences.getInstance().then((prefs) {
+    var themeName = prefs.getString('themeName') ?? 'base';
+    runApp(
+      ChangeNotifierProvider<ThemeNotifier>(
+        create: (_) => ThemeNotifier(
+            themeName,
+            GlobalThemeData.themeLightMap[themeName] as ThemeData,
+            GlobalThemeData.themeDarkMap[themeName] as ThemeData),
+        child: const MyApp(),
+      ),
+    );
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -39,12 +73,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return ChangeNotifierProvider(
-      create: (context) => ServiceState(),
+      create: (context) => ServiceState(themeNotifier.getThemeName(),
+          Theme.of(context).colorScheme.brightness),
       child: MaterialApp(
         title: 'Holy Cross Music',
-        theme: GlobalThemeData.lightThemeData,
-        darkTheme: GlobalThemeData.darkThemeData,
+        theme: themeNotifier.getLightTheme(),
+        darkTheme: themeNotifier.getDarkTheme(),
         home: const MyHomePage(title: 'Holy Cross Music'),
       ),
     );
@@ -68,6 +104,11 @@ class ServiceState extends ChangeNotifier {
   bool initCatalogueSpinner = true;
   bool refreshDisabled = false;
   bool catalogueRefreshDisabled = false;
+  String _themeName;
+  Brightness _brightness;
+  Color serviceColour;
+  ServiceState(this._themeName, this._brightness)
+      : serviceColour = Service.serviceColor(_themeName, Brightness.dark);
 
   void setCurrentService(Service service) {
     currentService = service;
@@ -171,6 +212,11 @@ class ServiceState extends ChangeNotifier {
     catalogueRefreshDisabled = true;
     notifyListeners();
   }
+
+  void setServiceColour(Color colour) {
+    serviceColour = colour;
+    notifyListeners();
+  }
 }
 
 void updateNextServiceWidget(Service service) {
@@ -206,26 +252,34 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // late Future<Service?> futureNextService;
-  Service? upcomingService;
-  List<MonthlyMusic>? serviceList = <MonthlyMusic>[];
+  Service? nextService;
+  String serviceColour = 'base';
+  List<MonthlyMusic>? serviceList;
   int? catalogueCount = 0;
   static const String sundayBySundayUrl = 'https://sbs.rscm.org.uk/';
+
+  void asyncLoadData(BuildContext context) async {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    await updateMusicDb();
+    serviceList = await DbFunctions().getServiceList();
+    nextService = await DbFunctions().getNextService();
+    serviceColour = nextService?.colour ?? 'base';
+    setState(() {
+      context.read<ServiceState>().serviceList = serviceList;
+      context.read<ServiceState>().nextService = nextService;
+      context.read<ServiceState>().initMusicSpinner = false;
+      context.read<ServiceState>().serviceColour =
+          Service.serviceColor(serviceColour, Brightness.dark);
+    });
+    onThemeChanged(serviceColour, themeNotifier);
+  }
 
   @override
   void initState() {
     print("App init");
-    updateMusicDb().then((data) => {
-          DbFunctions().getServiceList().then((data) => setState(() {
-                context.read<ServiceState>().serviceList = data;
-                serviceList = data;
-                DbFunctions().getNextService().then((data) => setState(() {
-                      context.read<ServiceState>().nextService = data;
-                      context.read<ServiceState>().initMusicSpinner = false;
-                      // wearOsSync(data);
-                    }));
-              }))
-        });
-
+    
+    asyncLoadData(context);
+    
     DbFunctions().getCatalogueCount().then((data) => setState(() {
           catalogueCount = data;
           if (catalogueCount == 0) {
@@ -247,19 +301,31 @@ class _MyHomePageState extends State<MyHomePage> {
         }));
 
     super.initState();
+
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    //   onThemeChanged('rose', themeNotifier);
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<ServiceState>();
-
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    // var serviceColour = appState.nextService?.colour ?? 'base';
+    // onThemeChanged(serviceColour, themeNotifier);
     return Scaffold(
         appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            title: Text(widget.title),
+            backgroundColor: appState.serviceColour,
+            title: Text(widget.title,
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
             actions: <Widget>[
               IconButton(
-                icon: const Icon(Icons.refresh),
+                icon: Icon(
+                  Icons.refresh,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
                 onPressed: appState.refreshDisabled
                     ? null
                     : () async {
@@ -268,30 +334,37 @@ class _MyHomePageState extends State<MyHomePage> {
                         if (!kIsWeb) {
                           Fluttertoast.showToast(msg: 'Music lists updating');
                         }
-                        setState(() {
-                          updateMusicDb().then((data) => {
-                                DbFunctions()
-                                    .getServiceList()
-                                    .then((data) => setState(() {
-                                          context
-                                              .read<ServiceState>()
-                                              .serviceList = data;
-                                          serviceList = data;
-                                          DbFunctions()
-                                              .getNextService()
-                                              .then((data) => setState(() {
-                                                    context
-                                                        .read<ServiceState>()
-                                                        .nextService = data;
-                                                    context
-                                                            .read<ServiceState>()
-                                                            .initMusicSpinner =
-                                                        false;
-                                                    // wearOsSync(data);
-                                                  }));
-                                        }))
-                              });
-                        });
+                        updateMusicDb().then((data) => {
+                              DbFunctions()
+                                  .getServiceList()
+                                  .then((data) => setState(() {
+                                        context
+                                            .read<ServiceState>()
+                                            .serviceList = data;
+                                        serviceList = data;
+                                        DbFunctions()
+                                            .getNextService()
+                                            .then((data) => setState(() {
+                                                  context
+                                                      .read<ServiceState>()
+                                                      .nextService = data;
+                                                  context
+                                                      .read<ServiceState>()
+                                                      .initMusicSpinner = false;
+                                                  wearOsSync(data);
+                                                  onThemeChanged(
+                                                      data?.colour ?? 'base',
+                                                      themeNotifier);
+                                                  context
+                                                          .read<ServiceState>()
+                                                          .serviceColour =
+                                                      Service.serviceColor(
+                                                          data?.colour ??
+                                                              'base',
+                                                          Brightness.dark);
+                                                }));
+                                      }))
+                            });
                         Timer(
                             const Duration(seconds: 4), appState.enableRefresh);
                       },
@@ -430,50 +503,47 @@ class _ServiceListPageState extends State<ServiceListPage> {
     var serviceList = appState.serviceList;
 
     return Scaffold(
-        appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            actions: <Widget>[
-              IconButton(
-                  icon: const Icon(Icons.refresh),
-                  onPressed: appState.refreshDisabled
-                      ? null
-                      : () async {
-                          appState.disableRefresh();
-                          print('Music lists updating');
-                          if (!kIsWeb) {
-                            Fluttertoast.showToast(msg: 'Music lists updating');
-                          }
-                          () {
-                            setState(() {
-                              updateMusicDb().then((data) => {
-                                    DbFunctions()
-                                        .getServiceList()
-                                        .then((data) => setState(() {
-                                              context
-                                                  .read<ServiceState>()
-                                                  .serviceList = data;
-                                              serviceList = data;
-                                              DbFunctions()
-                                                  .getNextService()
-                                                  .then((data) => setState(() {
-                                                        context
-                                                            .read<
-                                                                ServiceState>()
-                                                            .nextService = data;
-                                                        context
-                                                            .read<
-                                                                ServiceState>()
-                                                            .initMusicSpinner = false;
-                                                        wearOsSync(data);
-                                                      }));
-                                            }))
-                                  });
-                            });
-                          };
-                          Timer(const Duration(seconds: 4),
-                              appState.enableRefresh);
-                        })
-            ]),
+        appBar:
+            AppBar(backgroundColor: appState.serviceColour, actions: <Widget>[
+          IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: appState.refreshDisabled
+                  ? null
+                  : () async {
+                      appState.disableRefresh();
+                      print('Music lists updating');
+                      if (!kIsWeb) {
+                        Fluttertoast.showToast(msg: 'Music lists updating');
+                      }
+                      () {
+                        setState(() {
+                          updateMusicDb().then((data) => {
+                                DbFunctions()
+                                    .getServiceList()
+                                    .then((data) => setState(() {
+                                          context
+                                              .read<ServiceState>()
+                                              .serviceList = data;
+                                          serviceList = data;
+                                          DbFunctions()
+                                              .getNextService()
+                                              .then((data) => setState(() {
+                                                    context
+                                                        .read<ServiceState>()
+                                                        .nextService = data;
+                                                    context
+                                                            .read<ServiceState>()
+                                                            .initMusicSpinner =
+                                                        false;
+                                                    wearOsSync(data);
+                                                  }));
+                                        }))
+                              });
+                        });
+                      };
+                      Timer(const Duration(seconds: 4), appState.enableRefresh);
+                    })
+        ]),
         body: SingleChildScrollView(
           child: Center(child: () {
             if (serviceList != null) {
@@ -584,8 +654,12 @@ class ServiceMusicPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            title: Text(Music.parseDate(currentService.date))),
+            backgroundColor: currentService
+                .servicePrimaryColour(Theme.of(context).colorScheme.brightness),
+            title: Text(Music.parseDate(currentService.date),
+                style: TextStyle(
+                    color: currentService.serviceOnPrimaryColour(
+                        Theme.of(context).colorScheme.brightness)))),
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -611,7 +685,9 @@ class EventsPage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.primary,
-            title: const Text('Choir Events')),
+            title: Text('Choir Events',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.onPrimary))),
         body: SingleChildScrollView(child: Center(child: () {
           if (events!.isNotEmpty) {
             return Column(children: [
